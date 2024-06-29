@@ -12,7 +12,7 @@ import OSLog
 
 struct FB14083137Tests {
 
-    @Test func dataLoading() async throws {
+    @Test func dataLoading1() async throws {
         let task = Task {
             let container = try FBDatabase.getModelContainer()
             let context = ModelContext(container)
@@ -21,12 +21,8 @@ struct FB14083137Tests {
             try FBDatabase.deleteAllModels(context: context)
             
             // load once inserting
-            let loadDataActor1 =  LoadSampleData(modelContainer: container)
-            try await loadDataActor1.loadData()
-            
-            // reload updating
-            let loadDataActor2 =  LoadSampleData(modelContainer: container)
-            try await loadDataActor2.loadData()
+            let loadDataActor =  LoadSampleData(modelContainer: container)
+            try await loadDataActor.loadData()
             
             // validate relationships
             if let customers = Customer.fetchAll(context: context) {
@@ -53,4 +49,40 @@ struct FB14083137Tests {
         try await task.value
     }
 
+    @Test func dataLoading2() async throws {
+        let task = Task {
+            let container = try FBDatabase.getModelContainer()
+            let context = ModelContext(container)
+            
+            // clear database
+            try FBDatabase.deleteAllModels(context: context)
+            
+            // load invoice only
+            let loadDataActor =  LoadSampleData(modelContainer: container)
+            try await loadDataActor.loadInvoiceOnly()
+            
+            // validate relationships
+            if let customers = Customer.fetchAll(context: context) {
+                for customer in customers {
+                    Logger().info("Customer \(customer.name ?? "Unknown") address id: \(customer.address?.id ?? "")")
+                    #expect(customer.address?.id ==  customer.addressId)
+                }
+            }
+            if let invoices = Invoice.fetchAll(context: context) {
+                for invoice in invoices {
+                    Logger().info("Customer \(invoice.customer?.name ?? "Unknown") invoice: \(invoice.number ?? 0)")
+                    #expect(invoice.address?.id == invoice.addressId)
+                    #expect(invoice.customer?.id == invoice.customerId)
+                }
+            }
+            if let quotes = Quote.fetchAll(context: context) {
+                for quote in quotes {
+                    Logger().info("Customer \(quote.customer?.name ?? "Unknown") quote: \(quote.number ?? 0)")
+                    #expect(quote.address?.id == quote.addressId)
+                    #expect(quote.customer?.id == quote.customerId)
+                }
+            }
+        }
+        try await task.value
+    }
 }

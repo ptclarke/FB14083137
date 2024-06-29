@@ -33,4 +33,16 @@ actor LoadSampleData {
         }
     }
     
+    func loadInvoiceOnly() async throws {
+        guard let data = SourceData.jsonData() else {
+            throw NSError(domain: "FB14083137", code: 890, userInfo: ["localizedDescription": "Unable to load data"])
+        }
+        guard let object = try FBCoder.shared.decodeObject(data: data, type: ResponseOutgoingMap.self) as ResponseOutgoingMap? else {
+            throw NSError(domain: "FB14083137", code: 891, userInfo: ["localizedDescription": "Unable to decode data"])
+        }
+        
+        if let invoices = object.responseOutgoing.invoices {
+            Invoice.persist(context: modelContext, data: invoices)
+        }
+    }
 }
