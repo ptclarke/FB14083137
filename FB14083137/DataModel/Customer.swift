@@ -12,7 +12,7 @@ import SwiftData
 final class Customer {
     
     @Attribute(.unique)
-    let id: String
+    var id: String
     
     var addressId: String?
     var chargeGST: Bool?
@@ -148,16 +148,16 @@ extension Customer {
         var result = SyncResult(model: String(describing: Self.self), rows: data.count)
         for object in data {
             context.insert(object)
-            foreignKeyUpdates(object: object)
+            foreignKeyUpdates(object: object, context: context)
       }
         try? context.save()
         result.setElapsedTime()
         return result
     }
 
-    static func foreignKeyUpdates(object: Customer) {
+    static func foreignKeyUpdates(object: Customer, context: ModelContext) {
         object.address = nil
-        if let context = object.modelContext, let targetIdValue = object.addressId {
+        if let targetIdValue = object.addressId {
             object.address = Address.fetchById(context: context, id: targetIdValue)
         }
     }

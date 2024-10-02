@@ -10,6 +10,7 @@ import SwiftData
 import OSLog
 @testable import FB14083137
 
+
 struct FB14083137Tests {
 
     @Test func dataLoading1() async throws {
@@ -23,6 +24,7 @@ struct FB14083137Tests {
             // load once inserting
             let loadDataActor =  LoadSampleData(modelContainer: container)
             try await loadDataActor.loadData()
+            try context.save()
             
             // validate relationships
             if let customers = Customer.fetchAll(context: context) {
@@ -54,12 +56,10 @@ struct FB14083137Tests {
             let container = try FBDatabase.getModelContainer()
             let context = ModelContext(container)
             
-            // clear database
-            try FBDatabase.deleteAllModels(context: context)
-            
             // load invoice only
             let loadDataActor =  LoadSampleData(modelContainer: container)
             try await loadDataActor.loadInvoiceOnly()
+            try context.save()
             
             // validate relationships
             if let customers = Customer.fetchAll(context: context) {

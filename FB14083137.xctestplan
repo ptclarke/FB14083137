@@ -25,7 +25,6 @@
       }
     },
     {
-      "parallelizable" : true,
       "target" : {
         "containerPath" : "container:FB14083137.xcodeproj",
         "identifier" : "56DD0EBD2C2F690C00A52382",

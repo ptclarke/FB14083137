@@ -12,7 +12,7 @@ import SwiftData
 final class Quote {
     
     @Attribute(.unique)
-    let id: String
+    var id: String
     
     var addressId: String?
     var chargeGST: Bool?

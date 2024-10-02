@@ -31,6 +31,7 @@ actor LoadSampleData {
         if let quotes = object.responseOutgoing.quotes {
             Quote.persist(context: modelContext, data: quotes)
         }
+        try modelContext.save()
     }
     
     func loadInvoiceOnly() async throws {
@@ -44,5 +45,6 @@ actor LoadSampleData {
         if let invoices = object.responseOutgoing.invoices {
             Invoice.persist(context: modelContext, data: invoices)
         }
+        try modelContext.save()
     }
 }

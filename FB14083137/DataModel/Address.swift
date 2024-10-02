@@ -12,7 +12,7 @@ import SwiftData
 final class Address {
     
     @Attribute(.unique)
-    let id: String
+    var id: String
     
     var city: String?
     var country: String?
