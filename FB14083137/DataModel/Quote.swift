@@ -291,21 +291,23 @@ extension Quote {
         var result = SyncResult(model: String(describing: Self.self), rows: data.count)
         for object in data {
             context.insert(object)
-            foreignKeyUpdates(object: object)
-      }
-        try? context.save()
+            if let quote = Quote.fetchById(context: context, id: object.id) {
+                quote.foreignKeyUpdates()
+                try? context.save()
+            }
+        }
         result.setElapsedTime()
         return result
     }
 
-    static func foreignKeyUpdates(object: Quote) {
-        object.address = nil
-        if let context = object.modelContext, let targetIdValue = object.addressId {
-            object.address = Address.fetchById(context: context, id: targetIdValue)
+    func foreignKeyUpdates() {
+        address = nil
+        if let context = modelContext, let targetIdValue = addressId {
+            address = Address.fetchById(context: context, id: targetIdValue)
         }
-        object.customer = nil
-        if let context = object.modelContext, let targetIdValue = object.customerId {
-            object.customer = Customer.fetchById(context: context, id: targetIdValue)
+        customer = nil
+        if let context = modelContext, let targetIdValue = customerId {
+            customer = Customer.fetchById(context: context, id: targetIdValue)
         }
     }
 }

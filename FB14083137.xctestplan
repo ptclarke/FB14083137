@@ -4,7 +4,7 @@
       "id" : "EC8D8C5C-76B4-46C6-9045-EEA6E1BD88C7",
       "name" : "Test Scheme Action",
       "options" : {
-
+        "testRepetitionMode" : "fixedIterations"
       }
     }
   ],

@@ -148,17 +148,19 @@ extension Customer {
         var result = SyncResult(model: String(describing: Self.self), rows: data.count)
         for object in data {
             context.insert(object)
-            foreignKeyUpdates(object: object, context: context)
-      }
-        try? context.save()
+            if let customer = Customer.fetchById(context: context, id: object.id) {
+                customer.foreignKeyUpdates()
+                try? context.save()
+            }
+        }
         result.setElapsedTime()
         return result
     }
 
-    static func foreignKeyUpdates(object: Customer, context: ModelContext) {
-        object.address = nil
-        if let targetIdValue = object.addressId {
-            object.address = Address.fetchById(context: context, id: targetIdValue)
+    func foreignKeyUpdates() {
+        address = nil
+        if let context = modelContext, let targetIdValue = addressId {
+            address = Address.fetchById(context: context, id: targetIdValue)
         }
     }
 }
